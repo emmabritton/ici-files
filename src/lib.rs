@@ -6,7 +6,10 @@ pub mod palette;
 
 pub mod prelude {
     pub use crate::image::*;
+    pub use crate::animated::*;
+    pub use crate::errors::*;
     pub use crate::*;
+    pub use crate::palette::FilePalette;
 }
 
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]

@@ -202,6 +202,26 @@ impl AnimatedIndexedImage {
     }
 
     #[inline]
+    pub fn get_pixels(&self) -> &[u8] {
+        &self.pixels
+    }
+
+    #[inline]
+    pub fn get_frame_pixels(&self, idx: u8) -> Result<&[u8], IndexedImageError> {
+        if idx >= self.frame_count as u8 {
+            return Err(IndexOutOfRange(idx as usize, self.frame_count, "frames"));
+        }
+        let start = self.frame_size * idx as usize;
+        let end = self.frame_size * (idx as usize+1);
+        Ok(&self.pixels[start..end])
+    }
+
+    #[inline]
+    pub fn get_current_frame_pixels(&self) -> &[u8] {
+        self.get_frame_pixels(self.current_frame as u8).unwrap()
+    }
+
+    #[inline]
     pub fn get_pixel(&self, frame: u8, pixel_idx: usize) -> Result<u8, IndexedImageError> {
         if frame >= self.frame_count as u8 {
             return Err(IndexOutOfRange(frame as usize, self.frame_count, "frames"));
@@ -883,5 +903,48 @@ mod test {
         assert_eq!(image.get_pixel(0, idx).unwrap(), 1);
         assert!(image.set_pixel(0, idx, 2).is_ok());
         assert_eq!(image.get_pixel(0, idx).unwrap(), 2);
+    }
+
+    #[test]
+    fn updates() {
+        let mut image = AnimatedIndexedImage::new(1, 1, 1.0, 4, vec![IciColor::new(255, 255, 255, 255), IciColor::new(255, 0, 0, 255), IciColor::new(0, 255, 0, 255), IciColor::new(0, 0, 255, 255)], vec![0, 1, 2, 3], Loops).unwrap();
+        assert_eq!(image.get_current_frame_pixels(), &[0]);
+        image.update(0.8);
+        assert_eq!(image.get_current_frame_pixels(), &[0]);
+        image.update(0.2);
+        image.update(0.2);
+        assert_eq!(image.get_current_frame_pixels(), &[1]);
+    }
+
+    #[test]
+    fn once() {
+        let mut image = AnimatedIndexedImage::new(1, 1, 0.9, 4, vec![IciColor::new(255, 255, 255, 255), IciColor::new(255, 0, 0, 255), IciColor::new(0, 255, 0, 255), IciColor::new(0, 0, 255, 255)], vec![0, 1, 2, 3], Once).unwrap();
+        assert!(!image.animate());
+        assert_eq!(image.get_current_frame_pixels(), &[0]);
+        image.update(1.0);
+        image.update(0.1);
+        assert_eq!(image.get_current_frame_pixels(), &[0]);
+        image.set_animate(true);
+        assert!(image.animate());
+        image.update(1.0);
+        image.update(0.1);
+        assert!(image.animate());
+        assert_eq!(image.get_current_frame_pixels(), &[1]);
+        image.update(1.0);
+        image.update(0.1);
+        assert!(image.animate());
+        assert_eq!(image.get_current_frame_pixels(), &[2]);
+        image.update(1.0);
+        image.update(0.1);
+        assert!(image.animate());
+        assert_eq!(image.get_current_frame_pixels(), &[3]);
+        image.update(1.0);
+        image.update(0.1);
+        assert!(!image.animate());
+        assert_eq!(image.get_current_frame_pixels(), &[0]);
+        image.update(1.0);
+        image.update(0.1);
+        assert!(!image.animate());
+        assert_eq!(image.get_current_frame_pixels(), &[0]);
     }
 }

@@ -121,6 +121,11 @@ impl IndexedImage {
     }
 
     #[inline]
+    pub fn get_pixels(&self) -> &[u8] {
+        &self.pixels
+    }
+
+    #[inline]
     pub fn get_pixel(&self, pixel_idx: usize) -> Result<u8, IndexedImageError> {
         if pixel_idx >= self.pixels.len() {
             return Err(IndexOutOfRange(pixel_idx, self.pixels.len(), "pixels"));
