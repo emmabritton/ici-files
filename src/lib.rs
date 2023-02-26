@@ -5,11 +5,11 @@ pub mod image;
 pub mod palette;
 
 pub mod prelude {
-    pub use crate::image::*;
     pub use crate::animated::*;
     pub use crate::errors::*;
-    pub use crate::*;
+    pub use crate::image::*;
     pub use crate::palette::FilePalette;
+    pub use crate::*;
 }
 
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]

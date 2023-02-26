@@ -212,7 +212,7 @@ impl AnimatedIndexedImage {
             return Err(IndexOutOfRange(idx as usize, self.frame_count, "frames"));
         }
         let start = self.frame_size * idx as usize;
-        let end = self.frame_size * (idx as usize+1);
+        let end = self.frame_size * (idx as usize + 1);
         Ok(&self.pixels[start..end])
     }
 
@@ -907,7 +907,21 @@ mod test {
 
     #[test]
     fn updates() {
-        let mut image = AnimatedIndexedImage::new(1, 1, 1.0, 4, vec![IciColor::new(255, 255, 255, 255), IciColor::new(255, 0, 0, 255), IciColor::new(0, 255, 0, 255), IciColor::new(0, 0, 255, 255)], vec![0, 1, 2, 3], Loops).unwrap();
+        let mut image = AnimatedIndexedImage::new(
+            1,
+            1,
+            1.0,
+            4,
+            vec![
+                IciColor::new(255, 255, 255, 255),
+                IciColor::new(255, 0, 0, 255),
+                IciColor::new(0, 255, 0, 255),
+                IciColor::new(0, 0, 255, 255),
+            ],
+            vec![0, 1, 2, 3],
+            Loops,
+        )
+        .unwrap();
         assert_eq!(image.get_current_frame_pixels(), &[0]);
         image.update(0.8);
         assert_eq!(image.get_current_frame_pixels(), &[0]);
@@ -918,7 +932,21 @@ mod test {
 
     #[test]
     fn once() {
-        let mut image = AnimatedIndexedImage::new(1, 1, 0.9, 4, vec![IciColor::new(255, 255, 255, 255), IciColor::new(255, 0, 0, 255), IciColor::new(0, 255, 0, 255), IciColor::new(0, 0, 255, 255)], vec![0, 1, 2, 3], Once).unwrap();
+        let mut image = AnimatedIndexedImage::new(
+            1,
+            1,
+            0.9,
+            4,
+            vec![
+                IciColor::new(255, 255, 255, 255),
+                IciColor::new(255, 0, 0, 255),
+                IciColor::new(0, 255, 0, 255),
+                IciColor::new(0, 0, 255, 255),
+            ],
+            vec![0, 1, 2, 3],
+            Once,
+        )
+        .unwrap();
         assert!(!image.animate());
         assert_eq!(image.get_current_frame_pixels(), &[0]);
         image.update(1.0);
