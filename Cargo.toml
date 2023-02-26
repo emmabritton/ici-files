@@ -1,5 +1,5 @@
 [package]
-name = "ici_files"
+name = "ici-files"
 version = "0.1.0"
 edition = "2021"
 authors = ["Emma Britton <emmabritton@pm.me>"]
