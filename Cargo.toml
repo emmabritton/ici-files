@@ -1,0 +1,14 @@
+[package]
+name = "ici_files"
+version = "0.1.0"
+edition = "2021"
+authors = ["Emma Britton <emmabritton@pm.me>"]
+description = "Encode/decode ici files"
+license-file = "LICENSE"
+repository = "https://github.com/emmabritton/ici_files"
+readme = "README.md"
+keywords = ["graphics", "gamedev", "simple"]
+categories = ["graphics", "game-development"]
+
+[dependencies]
+thiserror = "1.0"
