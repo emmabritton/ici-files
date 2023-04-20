@@ -25,27 +25,15 @@ impl IciColor {
         Self { r, g, b, a }
     }
 
+    #[inline]
     pub const fn transparent() -> IciColor {
         IciColor::new(0, 0, 0, 0)
     }
 }
 
-//
-// #[derive(Debug, Clone)]
-// pub struct ImageAtlas {
-//     columns: NonZeroU8,
-//     rows: NonZeroU8,
-//     width: NonZeroU8,
-//     height: NonZeroU8,
-//     palette: Vec<IciColor>,
-//     tiles: Vec<Vec<u8>>,
-//     named: Vec<NamedTile>
-// }
-//
-// #[derive(Debug, Clone)]
-// pub struct NamedTile {
-//     index: u8,
-//     name: String,
-//     width: NonZeroU8,
-//     height: NonZeroU8
-// }
+impl IciColor {
+    #[inline]
+    pub const fn is_transparent(&self) -> bool {
+        self.a == 0
+    }
+}
