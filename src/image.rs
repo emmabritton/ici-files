@@ -170,6 +170,16 @@ impl IndexedImage {
     pub fn min_palette_size_supported(&self) -> u8 {
         self.highest_palette_idx
     }
+
+    #[inline]
+    pub fn width(&self) -> u8 {
+        self.width
+    }
+
+    #[inline]
+    pub fn height(&self) -> u8 {
+        self.height
+    }
 }
 
 impl IndexedImage {
