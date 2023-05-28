@@ -3,6 +3,7 @@ use crate::errors::IndexedImageError;
 use crate::errors::IndexedImageError::*;
 use crate::file::FileType::Animated;
 use crate::file::{verify_format, HEADER};
+use crate::image::IndexedImage;
 use crate::palette::FilePalette;
 use crate::{palette, IciColor};
 
@@ -241,6 +242,25 @@ impl AnimatedIndexedImage {
             return Err(IndexOutOfRange(y as usize, self.height as usize, "height"));
         }
         Ok(x as usize + y as usize * self.width as usize)
+    }
+
+    pub fn as_images(&self) -> Vec<IndexedImage> {
+        let mut output = vec![];
+        for i in 0..self.frame_count {
+            output.push(self.get_frame(i));
+        }
+        output
+    }
+
+    pub fn get_frame(&self, idx: usize) -> IndexedImage {
+        let pixels = self
+            .pixels
+            .iter()
+            .skip(self.frame_size * idx)
+            .take(self.frame_size)
+            .cloned()
+            .collect();
+        IndexedImage::new(self.width, self.height, self.palette.clone(), pixels).unwrap()
     }
 
     #[inline]
@@ -489,8 +509,8 @@ impl AnimatedIndexedImage {
             ));
         }
         let pixels_start = start + 12;
-        let frame_size = width * height;
-        let frame_pixel_count = frame_size as usize * frame_count as usize;
+        let frame_size = width as usize * height as usize;
+        let frame_pixel_count = frame_size * frame_count as usize;
         if bytes.len() < pixels_start + frame_pixel_count {
             return Err(InvalidFileFormat(
                 pixels_start,
