@@ -306,8 +306,18 @@ impl AnimatedIndexedImage {
     }
 
     #[inline]
-    pub fn animate(&self) -> bool {
+    pub fn animating(&self) -> bool {
         self.animate
+    }
+
+    #[inline]
+    pub fn width(&self) -> u8 {
+        self.width
+    }
+
+    #[inline]
+    pub fn height(&self) -> u8 {
+        self.height
     }
 
     #[inline]

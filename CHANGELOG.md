@@ -1,5 +1,8 @@
 # Changelog
 
+### Version 0.1.4
+- Add `width()` and `height()` for `AnimatedIndexedImage`
+
 ### Version 0.1.3
 - Add `get_frame(idx)` and `as_images()` for `AnimatedIndexedImage`
 
