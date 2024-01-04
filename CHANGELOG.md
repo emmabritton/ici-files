@@ -1,5 +1,8 @@
 # Changelog
 
+### Version 0.1.5
+- Fix crash with large palette sizes
+
 ### Version 0.1.4
 - Add `width()` and `height()` for `AnimatedIndexedImage`
 

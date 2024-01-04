@@ -120,7 +120,7 @@ pub(crate) fn read(
             }
             let count = bytes[start_idx];
             start_idx += 1;
-            let end = (count * 4) as usize;
+            let end = count as usize * 4;
             if bytes.len() < start_idx + end {
                 return Err(InvalidFileFormat(
                     start_idx,

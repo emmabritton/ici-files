@@ -977,32 +977,32 @@ mod test {
             Once,
         )
         .unwrap();
-        assert!(!image.animate());
+        assert!(!image.animating());
         assert_eq!(image.get_current_frame_pixels(), &[0]);
         image.update(1.0);
         image.update(0.1);
         assert_eq!(image.get_current_frame_pixels(), &[0]);
         image.set_animate(true);
-        assert!(image.animate());
+        assert!(image.animating());
         image.update(1.0);
         image.update(0.1);
-        assert!(image.animate());
+        assert!(image.animating());
         assert_eq!(image.get_current_frame_pixels(), &[1]);
         image.update(1.0);
         image.update(0.1);
-        assert!(image.animate());
+        assert!(image.animating());
         assert_eq!(image.get_current_frame_pixels(), &[2]);
         image.update(1.0);
         image.update(0.1);
-        assert!(image.animate());
+        assert!(image.animating());
         assert_eq!(image.get_current_frame_pixels(), &[3]);
         image.update(1.0);
         image.update(0.1);
-        assert!(!image.animate());
+        assert!(!image.animating());
         assert_eq!(image.get_current_frame_pixels(), &[0]);
         image.update(1.0);
         image.update(0.1);
-        assert!(!image.animate());
+        assert!(!image.animating());
         assert_eq!(image.get_current_frame_pixels(), &[0]);
     }
 }
