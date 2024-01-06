@@ -173,7 +173,7 @@ mod test {
         write(&Name("test".to_string()), &[], &mut output).unwrap();
         assert_eq!(
             output,
-            vec![PAL_NAME, 4, 't' as u8, 'e' as u8, 's' as u8, 't' as u8]
+            vec![PAL_NAME, 4, b't', b'e', b's', b't']
         );
 
         let mut output = vec![];

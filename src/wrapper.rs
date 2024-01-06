@@ -9,15 +9,15 @@ pub enum IndexedWrapper {
     Animated(AnimatedIndexedImage),
 }
 
-impl Into<IndexedWrapper> for IndexedImage {
-    fn into(self) -> IndexedWrapper {
-        IndexedWrapper::Static(self)
+impl From<IndexedImage> for IndexedWrapper {
+    fn from(value: IndexedImage) -> Self {
+        IndexedWrapper::Static(value)
     }
 }
 
-impl Into<IndexedWrapper> for AnimatedIndexedImage {
-    fn into(self) -> IndexedWrapper {
-        IndexedWrapper::Animated(self)
+impl From<AnimatedIndexedImage> for IndexedWrapper {
+    fn from(value: AnimatedIndexedImage) -> Self {
+        IndexedWrapper::Animated(value)
     }
 }
 
