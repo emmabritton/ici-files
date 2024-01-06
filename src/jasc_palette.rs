@@ -1,9 +1,9 @@
+use crate::jasc_palette::PaletteError::*;
+use crate::jasc_palette::ParseIssue::*;
+use crate::*;
 use std::error::Error;
 use std::fmt::{Display, Formatter};
 use std::str::FromStr;
-use crate::*;
-use crate::jasc_palette::PaletteError::*;
-use crate::jasc_palette::ParseIssue::*;
 
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 pub enum PaletteError {
@@ -48,11 +48,13 @@ pub struct JascPalette {
 
 impl JascPalette {
     pub const fn new(colors: Vec<IciColor>) -> Self {
-        Self { colors: colors }
+        Self { colors }
     }
 
     pub fn from(colors: &[IciColor]) -> Self {
-        Self { colors: colors.to_vec() }
+        Self {
+            colors: colors.to_vec(),
+        }
     }
 }
 

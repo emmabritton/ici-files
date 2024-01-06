@@ -2,17 +2,17 @@ pub mod animated;
 pub mod errors;
 pub mod file;
 pub mod image;
+pub mod jasc_palette;
 pub mod palette;
 pub mod wrapper;
-pub mod jasc_palette;
 
 pub mod prelude {
     pub use crate::animated::*;
     pub use crate::errors::*;
     pub use crate::image::*;
+    pub use crate::jasc_palette::*;
     pub use crate::palette::FilePalette;
     pub use crate::wrapper::*;
-    pub use crate::jasc_palette::*;
     pub use crate::*;
 }
 
