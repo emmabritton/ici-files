@@ -171,10 +171,7 @@ mod test {
     fn write_name() {
         let mut output = vec![];
         write(&Name("test".to_string()), &[], &mut output).unwrap();
-        assert_eq!(
-            output,
-            vec![PAL_NAME, 4, b't', b'e', b's', b't']
-        );
+        assert_eq!(output, vec![PAL_NAME, 4, b't', b'e', b's', b't']);
 
         let mut output = vec![];
         write(
