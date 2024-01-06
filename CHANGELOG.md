@@ -1,5 +1,8 @@
 # Changelog
 
+### Version 0.1.7
+- Add `JascPalette`
+
 ### Version 0.1.6
 - Add `IndexedWrapper` 
 

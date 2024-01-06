@@ -4,6 +4,7 @@ pub mod file;
 pub mod image;
 pub mod palette;
 pub mod wrapper;
+pub mod jasc_palette;
 
 pub mod prelude {
     pub use crate::animated::*;
@@ -11,6 +12,7 @@ pub mod prelude {
     pub use crate::image::*;
     pub use crate::palette::FilePalette;
     pub use crate::wrapper::*;
+    pub use crate::jasc_palette::*;
     pub use crate::*;
 }
 
