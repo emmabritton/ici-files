@@ -1,6 +1,6 @@
 [package]
 name = "ici-files"
-version = "0.1.5"
+version = "0.1.6"
 edition = "2021"
 authors = ["Emma Britton <emmabritton@pm.me>"]
 description = "Encode/decode ici files"
@@ -11,4 +11,4 @@ keywords = ["graphics", "gamedev", "simple"]
 categories = ["graphics", "game-development"]
 
 [dependencies]
-thiserror = "1.0"
+thiserror = "1.0.56"

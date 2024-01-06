@@ -1,5 +1,8 @@
 # Changelog
 
+### Version 0.1.6
+- Add `IndexedWrapper` 
+
 ### Version 0.1.5
 - Fix crash with large palette sizes
 

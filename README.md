@@ -1,8 +1,18 @@
+[![Crates.io](https://img.shields.io/crates/v/ici-files)](https://crates.io/crates/ici-files "Crates.io version")
+[![Documentation](https://img.shields.io/docsrs/ici-files)](https://docs.rs/ici-files "Documentation")
+
+
 # ICI Files
+
+## Usage
+
+```toml
+ici-files = "0.1.6"
+```
 
 Encodes and decodes ICI files and JASC palettes
 
-Designed to be used with [Buffer Graphics](https://github.com/emmabritton/buffer-graphics-lib), and in turn [Pixel Graphics](https://github.com/emmabritton/pixel-graphics-lib).
+Designed to be used with [Buffer Graphics](https://github.com/emmabritton/ici-files), and in turn [Pixel Graphics](https://github.com/emmabritton/pixel-graphics-lib).
 
 Indexed Color Images come in two forms:
 1. Single
@@ -37,12 +47,16 @@ The file contains a list of RGBA colors.
 
 ## Image formats
 
-#### Single
+### Single
 
 Single static image, max width and height is 255
 
-#### Animated
+### Animated
 
 Multi frame image, max width, height and frame count is 255.
 Also contains a frame rate as fractional seconds per frame.
 All frames must be the same size.
+
+#### IndexedWrapper
+
+Stores either a static or animated image and provides a limited abstract interface
