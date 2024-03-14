@@ -1,5 +1,11 @@
 # Changelog
 
+### Version 0.2.0
+### Breaking
+- Replace `IciColor` with `Color`
+- Add flip, rotate and recolor methods to `IndexedImage`
+- Add various `_unchecked` methods and remove unsafe code from non unsafe methods
+
 ### Version 0.1.7
 - Add `JascPalette`
 

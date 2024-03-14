@@ -4,8 +4,9 @@ use crate::errors::IndexedImageError::*;
 use crate::file::FileType::Animated;
 use crate::file::{verify_format, HEADER};
 use crate::image::IndexedImage;
+use crate::palette;
 use crate::palette::FilePalette;
-use crate::{palette, IciColor};
+use crate::prelude::*;
 
 #[derive(Debug, Clone, Copy, Eq, PartialEq)]
 pub enum PlayType {
@@ -58,7 +59,7 @@ pub struct AnimatedIndexedImage {
     width: u8,
     height: u8,
     per_frame: f64,
-    palette: Vec<IciColor>,
+    palette: Vec<Color>,
     /// max allowed is 255
     frame_count: usize,
     frame_size: usize,
@@ -78,7 +79,7 @@ impl AnimatedIndexedImage {
         height: u8,
         per_frame: f64,
         frame_count: u8,
-        palette: Vec<IciColor>,
+        palette: Vec<Color>,
         pixels: Vec<u8>,
         play_type: PlayType,
     ) -> Result<Self, IndexedImageError> {
@@ -128,7 +129,7 @@ impl AnimatedIndexedImage {
 impl AnimatedIndexedImage {
     /// Replace palette for image
     /// Will only return an error if the new palette has less colors than the image needs
-    pub fn set_palette(&mut self, palette: &[IciColor]) -> Result<(), IndexedImageError> {
+    pub fn set_palette(&mut self, palette: &[Color]) -> Result<(), IndexedImageError> {
         assert!(!palette.is_empty());
         if palette.len() < self.highest_palette_idx as usize {
             return Err(PaletteTooFewColors(self.highest_palette_idx));
@@ -141,7 +142,7 @@ impl AnimatedIndexedImage {
     /// Will only return an error if id is outside the new palette
     pub fn set_palette_replace_id(
         &mut self,
-        palette: &[IciColor],
+        palette: &[Color],
         id: u8,
     ) -> Result<(), IndexedImageError> {
         let new_palette_len = palette.len() as u8;
@@ -164,9 +165,9 @@ impl AnimatedIndexedImage {
     }
 
     /// Replace palette for image, any color indexes outside the palette will be expanded with `color`
-    pub fn set_palette_replace_color<C: Into<IciColor> + Copy>(
+    pub fn set_palette_replace_color<C: Into<Color> + Copy>(
         &mut self,
-        palette: &[IciColor],
+        palette: &[Color],
         color: C,
     ) {
         assert!(!palette.is_empty());
@@ -264,7 +265,7 @@ impl AnimatedIndexedImage {
     }
 
     #[inline]
-    pub fn get_color(&self, idx: u8) -> Result<IciColor, IndexedImageError> {
+    pub fn get_color(&self, idx: u8) -> Result<Color, IndexedImageError> {
         if idx >= self.palette.len() as u8 {
             return Err(IndexOutOfRange(idx as usize, self.palette.len(), "palette"));
         }
@@ -272,7 +273,7 @@ impl AnimatedIndexedImage {
     }
 
     #[inline]
-    pub fn set_color(&mut self, idx: u8, color: IciColor) -> Result<(), IndexedImageError> {
+    pub fn set_color(&mut self, idx: u8, color: Color) -> Result<(), IndexedImageError> {
         if idx >= self.palette.len() as u8 {
             return Err(IndexOutOfRange(idx as usize, self.palette.len(), "palette"));
         }
@@ -281,7 +282,7 @@ impl AnimatedIndexedImage {
     }
 
     #[inline]
-    pub fn get_palette(&self) -> &[IciColor] {
+    pub fn get_palette(&self) -> &[Color] {
         &self.palette
     }
 
@@ -531,7 +532,7 @@ impl AnimatedIndexedImage {
 
         let highest = *pixels.iter().max().expect("Invalid pixels data") as usize;
         let colors = match colors {
-            None => vec![IciColor::transparent(); highest + 1],
+            None => vec![TRANSPARENT; highest + 1],
             Some(colors) => colors,
         };
 
@@ -561,9 +562,9 @@ mod test {
             0.3,
             2,
             vec![
-                IciColor::transparent(),
-                IciColor::new(50, 51, 52, 53),
-                IciColor::new(60, 61, 62, 63),
+                TRANSPARENT,
+                Color::new(50, 51, 52, 53),
+                Color::new(60, 61, 62, 63),
             ],
             vec![0, 0, 1, 2, 1, 2, 1, 0],
             Once,
@@ -604,11 +605,7 @@ mod test {
         let (output, pal) = AnimatedIndexedImage::from_file_contents(&bytes).unwrap();
         let mut cloned = input.clone();
         cloned
-            .set_palette(&[
-                IciColor::transparent(),
-                IciColor::transparent(),
-                IciColor::transparent(),
-            ])
+            .set_palette(&[TRANSPARENT, TRANSPARENT, TRANSPARENT])
             .unwrap();
         assert_eq!(cloned, output);
         assert_eq!(pal, NoData);
@@ -622,9 +619,9 @@ mod test {
             0.3,
             3,
             vec![
-                IciColor::transparent(),
-                IciColor::new(50, 51, 52, 53),
-                IciColor::new(60, 61, 62, 63),
+                TRANSPARENT,
+                Color::new(50, 51, 52, 53),
+                Color::new(60, 61, 62, 63),
             ],
             vec![0, 0, 1, 2, 0, 0, 1, 2, 2, 1, 0, 0],
             OnceReversed,
@@ -671,11 +668,7 @@ mod test {
         let (output, pal) = AnimatedIndexedImage::from_file_contents(&bytes).unwrap();
         let mut cloned = input.clone();
         cloned
-            .set_palette(&[
-                IciColor::transparent(),
-                IciColor::transparent(),
-                IciColor::transparent(),
-            ])
+            .set_palette(&[TRANSPARENT, TRANSPARENT, TRANSPARENT])
             .unwrap();
         assert_eq!(cloned, output);
         assert_eq!(pal, ID(15));
@@ -689,9 +682,9 @@ mod test {
             0.3,
             2,
             vec![
-                IciColor::transparent(),
-                IciColor::new(50, 51, 52, 53),
-                IciColor::new(60, 61, 62, 63),
+                TRANSPARENT,
+                Color::new(50, 51, 52, 53),
+                Color::new(60, 61, 62, 63),
             ],
             vec![0, 0, 1, 2, 1, 2, 1, 0],
             Loops,
@@ -737,11 +730,7 @@ mod test {
         let (output, pal) = AnimatedIndexedImage::from_file_contents(&bytes).unwrap();
         let mut cloned = input.clone();
         cloned
-            .set_palette(&[
-                IciColor::transparent(),
-                IciColor::transparent(),
-                IciColor::transparent(),
-            ])
+            .set_palette(&[TRANSPARENT, TRANSPARENT, TRANSPARENT])
             .unwrap();
         assert_eq!(cloned, output);
         assert_eq!(pal, Name("Test".to_string()));
@@ -755,9 +744,9 @@ mod test {
             0.3,
             4,
             vec![
-                IciColor::transparent(),
-                IciColor::new(50, 51, 52, 53),
-                IciColor::new(60, 61, 62, 63),
+                TRANSPARENT,
+                Color::new(50, 51, 52, 53),
+                Color::new(60, 61, 62, 63),
             ],
             vec![0, 0, 1, 2, 1, 2, 1, 0, 0, 0, 0, 1, 2, 1, 2, 1],
             LoopsBoth,
@@ -828,17 +817,14 @@ mod test {
             3,
             0.3,
             2,
-            vec![
-                IciColor::new(255, 255, 255, 255),
-                IciColor::new(0, 0, 0, 255),
-            ],
+            vec![Color::new(255, 255, 255, 255), Color::new(0, 0, 0, 255)],
             vec![0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0],
             Once,
         )
         .unwrap();
         let mut modified = image.clone();
         modified
-            .set_palette(&[IciColor::new(255, 0, 0, 255), IciColor::new(0, 255, 0, 255)])
+            .set_palette(&[Color::new(255, 0, 0, 255), Color::new(0, 255, 0, 255)])
             .unwrap();
         assert_eq!(image.highest_palette_idx, modified.highest_palette_idx);
         assert_eq!(image.height, modified.height);
@@ -846,7 +832,7 @@ mod test {
         assert_eq!(image.pixels, image.pixels);
         assert_eq!(
             modified.palette,
-            vec![IciColor::new(255, 0, 0, 255), IciColor::new(0, 255, 0, 255)]
+            vec![Color::new(255, 0, 0, 255), Color::new(0, 255, 0, 255)]
         );
     }
 
@@ -858,9 +844,9 @@ mod test {
             0.3,
             2,
             vec![
-                IciColor::new(1, 1, 1, 1),
-                IciColor::new(2, 2, 2, 2),
-                IciColor::new(3, 3, 3, 3),
+                Color::new(1, 1, 1, 1),
+                Color::new(2, 2, 2, 2),
+                Color::new(3, 3, 3, 3),
             ],
             vec![0, 1, 2, 2, 0, 1, 2, 0, 0, 1, 2, 2, 0, 1, 2, 0],
             Loops,
@@ -868,13 +854,13 @@ mod test {
         .unwrap();
         let mut modified = image.clone();
         modified
-            .set_palette_replace_id(&[IciColor::new(5, 5, 5, 5)], 0)
+            .set_palette_replace_id(&[Color::new(5, 5, 5, 5)], 0)
             .unwrap();
         assert_eq!(modified.highest_palette_idx, 0);
         assert_eq!(image.height, modified.height);
         assert_eq!(image.width, modified.width);
         assert_eq!(image.pixels, image.pixels);
-        assert_eq!(modified.palette, vec![IciColor::new(5, 5, 5, 5)]);
+        assert_eq!(modified.palette, vec![Color::new(5, 5, 5, 5)]);
     }
 
     #[test]
@@ -885,16 +871,16 @@ mod test {
             0.3,
             2,
             vec![
-                IciColor::new(1, 1, 1, 1),
-                IciColor::new(2, 2, 2, 2),
-                IciColor::new(3, 3, 3, 3),
+                Color::new(1, 1, 1, 1),
+                Color::new(2, 2, 2, 2),
+                Color::new(3, 3, 3, 3),
             ],
             vec![0, 1, 2, 2, 0, 1, 2, 0, 0, 1, 2, 2, 0, 1, 2, 0],
             Loops,
         )
         .unwrap();
         let mut modified = image.clone();
-        modified.set_palette_replace_color(&[IciColor::new(5, 5, 5, 5)], IciColor::new(5, 5, 5, 5));
+        modified.set_palette_replace_color(&[Color::new(5, 5, 5, 5)], Color::new(5, 5, 5, 5));
         assert_eq!(modified.highest_palette_idx, 2);
         assert_eq!(image.height, modified.height);
         assert_eq!(image.width, modified.width);
@@ -902,9 +888,9 @@ mod test {
         assert_eq!(
             modified.palette,
             vec![
-                IciColor::new(5, 5, 5, 5),
-                IciColor::new(5, 5, 5, 5),
-                IciColor::new(5, 5, 5, 5)
+                Color::new(5, 5, 5, 5),
+                Color::new(5, 5, 5, 5),
+                Color::new(5, 5, 5, 5)
             ]
         );
     }
@@ -917,9 +903,9 @@ mod test {
             0.3,
             2,
             vec![
-                IciColor::new(1, 1, 1, 1),
-                IciColor::new(2, 2, 2, 2),
-                IciColor::new(3, 3, 3, 3),
+                Color::new(1, 1, 1, 1),
+                Color::new(2, 2, 2, 2),
+                Color::new(3, 3, 3, 3),
             ],
             vec![0, 1, 2, 2, 0, 1, 2, 0, 1, 2, 1, 2, 0, 2, 1, 0],
             Loops,
@@ -943,10 +929,10 @@ mod test {
             1.0,
             4,
             vec![
-                IciColor::new(255, 255, 255, 255),
-                IciColor::new(255, 0, 0, 255),
-                IciColor::new(0, 255, 0, 255),
-                IciColor::new(0, 0, 255, 255),
+                Color::new(255, 255, 255, 255),
+                Color::new(255, 0, 0, 255),
+                Color::new(0, 255, 0, 255),
+                Color::new(0, 0, 255, 255),
             ],
             vec![0, 1, 2, 3],
             Loops,
@@ -968,10 +954,10 @@ mod test {
             0.9,
             4,
             vec![
-                IciColor::new(255, 255, 255, 255),
-                IciColor::new(255, 0, 0, 255),
-                IciColor::new(0, 255, 0, 255),
-                IciColor::new(0, 0, 255, 255),
+                Color::new(255, 255, 255, 255),
+                Color::new(255, 0, 0, 255),
+                Color::new(0, 255, 0, 255),
+                Color::new(0, 0, 255, 255),
             ],
             vec![0, 1, 2, 3],
             Once,

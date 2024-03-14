@@ -1,7 +1,7 @@
-use crate::errors::IndexedImageError;
 use crate::errors::IndexedImageError::*;
 use crate::palette::FilePalette::*;
-use crate::IciColor;
+use crate::prelude::*;
+use std::collections::HashSet;
 
 pub(crate) const PAL_NO_DATA: u8 = 0;
 pub(crate) const PAL_ID: u8 = 1;
@@ -21,6 +21,56 @@ pub enum FilePalette {
     Colors,
 }
 
+fn distinct_count(colors: &[Color]) -> usize {
+    colors.iter().collect::<HashSet<_>>().len()
+}
+
+/// merges similar colors until there are < `max` unique colors
+/// the result will contain duplicates so the index is preserved
+pub fn simplify_palette_to_fit(colors: &[Color], max: usize) -> Vec<Color> {
+    let mut output = colors.to_vec();
+    let mut threshold = 2;
+    while distinct_count(&output) >= max {
+        output = simplify_palette(&output, threshold);
+        threshold += 10;
+    }
+    output
+}
+
+/// merges similar colors that fall with threshold of each other
+/// will remove gradients if threshold is too high or gradient too smooth
+///
+/// recommend starting threshold at 2, max is 1020
+/// the result will contain duplicates so the index is preserved
+pub fn simplify_palette(colors: &[Color], threshold: usize) -> Vec<Color> {
+    let mut output = colors.to_vec();
+    let mut idx = 0;
+
+    loop {
+        let color = &output[idx];
+        let mut to_merge = None;
+        for (i, cmp_color) in output.iter().enumerate() {
+            let diff = color.diff(cmp_color);
+            if idx != i && diff > 0 && diff < threshold {
+                to_merge = Some(i);
+                break;
+            }
+        }
+        if let Some(i) = to_merge {
+            let c = output[idx].mid(&output[i]);
+            output[idx] = c;
+            output[i] = c;
+        } else {
+            idx += 1;
+            if idx >= output.len() {
+                break;
+            }
+        }
+    }
+
+    output
+}
+
 impl FilePalette {
     pub(crate) fn to_byte(&self) -> u8 {
         match self {
@@ -34,7 +84,7 @@ impl FilePalette {
 
 pub(crate) fn write(
     palette: &FilePalette,
-    colors: &[IciColor],
+    colors: &[Color],
     output: &mut Vec<u8>,
 ) -> Result<(), IndexedImageError> {
     output.push(palette.to_byte());
@@ -69,7 +119,7 @@ pub(crate) fn write(
 pub(crate) fn read(
     mut start_idx: usize,
     bytes: &[u8],
-) -> Result<(usize, FilePalette, Option<Vec<IciColor>>), IndexedImageError> {
+) -> Result<(usize, FilePalette, Option<Vec<Color>>), IndexedImageError> {
     if bytes.len() <= start_idx {
         return Err(InvalidFileFormat(
             start_idx,
@@ -130,7 +180,7 @@ pub(crate) fn read(
             let mut colors = vec![];
             let color_bytes: Vec<&u8> = bytes.iter().skip(start_idx).take(end).collect();
             for color in color_bytes.chunks_exact(4) {
-                colors.push(IciColor::new(*color[0], *color[1], *color[2], *color[3]));
+                colors.push(Color::new(*color[0], *color[1], *color[2], *color[3]));
             }
             Ok((end + 2, Colors, Some(colors)))
         }
@@ -152,7 +202,7 @@ mod test {
         assert_eq!(output, vec![PAL_NO_DATA]);
 
         let mut output = vec![];
-        write(&NoData, &[IciColor::new(255, 45, 231, 2)], &mut output).unwrap();
+        write(&NoData, &[Color::new(255, 45, 231, 2)], &mut output).unwrap();
         assert_eq!(output, vec![PAL_NO_DATA]);
     }
 
@@ -163,7 +213,7 @@ mod test {
         assert_eq!(output, vec![PAL_ID, 0, 5]);
 
         let mut output = vec![];
-        write(&ID(256), &[IciColor::new(255, 45, 231, 2)], &mut output).unwrap();
+        write(&ID(256), &[Color::new(255, 45, 231, 2)], &mut output).unwrap();
         assert_eq!(output, vec![PAL_ID, 1, 0]);
     }
 
@@ -176,7 +226,7 @@ mod test {
         let mut output = vec![];
         write(
             &Name("😺".to_string()),
-            &[IciColor::new(255, 45, 231, 2)],
+            &[Color::new(255, 45, 231, 2)],
             &mut output,
         )
         .unwrap();
@@ -186,16 +236,13 @@ mod test {
     #[test]
     fn write_colors() {
         let mut output = vec![];
-        write(&Colors, &[IciColor::new(100, 101, 102, 103)], &mut output).unwrap();
+        write(&Colors, &[Color::new(100, 101, 102, 103)], &mut output).unwrap();
         assert_eq!(output, vec![PAL_COLORS, 1, 100, 101, 102, 103]);
 
         let mut output = vec![];
         write(
             &Colors,
-            &[
-                IciColor::new(100, 101, 102, 103),
-                IciColor::new(0, 0, 0, 255),
-            ],
+            &[Color::new(100, 101, 102, 103), Color::new(0, 0, 0, 255)],
             &mut output,
         )
         .unwrap();
@@ -238,8 +285,8 @@ mod test {
         assert_eq!(
             colors,
             Some(vec![
-                IciColor::new(100, 101, 102, 103),
-                IciColor::new(0, 0, 0, 255)
+                Color::new(100, 101, 102, 103),
+                Color::new(0, 0, 0, 255)
             ])
         );
     }
@@ -263,8 +310,8 @@ mod test {
         assert_eq!(
             colors,
             Some(vec![
-                IciColor::new(100, 101, 102, 103),
-                IciColor::new(0, 0, 0, 255)
+                Color::new(100, 101, 102, 103),
+                Color::new(0, 0, 0, 255)
             ])
         );
         assert_eq!(bytes[start + skip..], [2, 2, 2, 2]);

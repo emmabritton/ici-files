@@ -7,7 +7,7 @@
 ## Usage
 
 ```toml
-ici-files = "0.1.7"
+ici-files = "0.2.0"
 ```
 
 Encodes and decodes ICI files and JASC palettes
@@ -60,3 +60,11 @@ All frames must be the same size.
 #### IndexedWrapper
 
 Stores either a static or animated image and provides a limited abstract interface
+
+## Features
+
+> Default: `serde`
+
+#### Serde
+
+Adds serialize and deserialize to some structs

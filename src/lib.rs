@@ -1,43 +1,32 @@
 pub mod animated;
+pub mod color;
 pub mod errors;
 pub mod file;
 pub mod image;
 pub mod jasc_palette;
 pub mod palette;
+pub mod scaling;
 pub mod wrapper;
 
 pub mod prelude {
     pub use crate::animated::*;
+    pub use crate::color::*;
     pub use crate::errors::*;
     pub use crate::image::*;
     pub use crate::jasc_palette::*;
     pub use crate::palette::FilePalette;
+    pub use crate::scaling::*;
     pub use crate::wrapper::*;
     pub use crate::*;
 }
 
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
-pub struct IciColor {
-    pub r: u8,
-    pub g: u8,
-    pub b: u8,
-    pub a: u8,
-}
-
-impl IciColor {
-    pub const fn new(r: u8, g: u8, b: u8, a: u8) -> Self {
-        Self { r, g, b, a }
-    }
-
-    #[inline]
-    pub const fn transparent() -> IciColor {
-        IciColor::new(0, 0, 0, 0)
-    }
-}
-
-impl IciColor {
-    #[inline]
-    pub const fn is_transparent(&self) -> bool {
-        self.a == 0
-    }
+pub trait Tint {
+    /// Add to the RGBA channels by the amounts specified
+    ///
+    /// Channels are clamped to 0..=255
+    fn tint_add(&mut self, r_diff: isize, g_diff: isize, b_diff: isize, a_diff: isize);
+    /// Multiply the RGBA channels by the amounts specified
+    ///
+    /// Channels are clamped to 0..=255
+    fn tint_mul(&mut self, r_diff: f32, g_diff: f32, b_diff: f32, a_diff: f32);
 }

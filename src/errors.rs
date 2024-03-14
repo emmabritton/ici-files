@@ -33,4 +33,14 @@ pub enum IndexedImageError {
     PaletteIsEmpty,
     #[error("Per frame timing is negative: {0}")]
     NegativePerFrame(f64),
+    #[error("Image after scaling would be too big {0}x{1}")]
+    TooBigPostScale(usize, usize),
+    #[error("Scale params must be > 0, was {0},{1}")]
+    InvalidScaleParams(usize, usize),
+    #[error("Both image must be the same size")]
+    InvalidImageSize,
+    #[error("Color diff list must be the same size as the image palette")]
+    InvalidPaletteSize,
+    #[error("Hex string has invalid format: {0}")]
+    InvalidHexFormat(String),
 }

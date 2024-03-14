@@ -1,6 +1,6 @@
 use crate::jasc_palette::PaletteError::*;
 use crate::jasc_palette::ParseIssue::*;
-use crate::*;
+use crate::prelude::*;
 use std::error::Error;
 use std::fmt::{Display, Formatter};
 use std::str::FromStr;
@@ -43,15 +43,15 @@ impl Error for PaletteError {}
 
 #[derive(Debug, Eq, PartialEq, Clone)]
 pub struct JascPalette {
-    pub colors: Vec<IciColor>,
+    pub colors: Vec<Color>,
 }
 
 impl JascPalette {
-    pub const fn new(colors: Vec<IciColor>) -> Self {
+    pub const fn new(colors: Vec<Color>) -> Self {
         Self { colors }
     }
 
-    pub fn from(colors: &[IciColor]) -> Self {
+    pub fn from(colors: &[Color]) -> Self {
         Self {
             colors: colors.to_vec(),
         }
@@ -127,7 +127,7 @@ impl JascPalette {
             if values.len() == 4 {
                 a = u8::from_str(values[3]).map_err(|_| ParseError(ColorNumbers(i)))?;
             }
-            output.push(IciColor { r, g, b, a })
+            output.push(Color::new(r, g, b, a))
         }
         Ok(JascPalette::new(output))
     }

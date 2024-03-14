@@ -1,6 +1,6 @@
 [package]
 name = "ici-files"
-version = "0.1.7"
+version = "0.2.0"
 edition = "2021"
 authors = ["Emma Britton <emmabritton@pm.me>"]
 description = "Encode/decode ici files"
@@ -10,5 +10,10 @@ readme = "README.md"
 keywords = ["graphics", "gamedev", "simple"]
 categories = ["graphics", "game-development"]
 
+[features]
+default = ["serde"]
+serde = ["dep:serde"]
+
 [dependencies]
 thiserror = "1.0.56"
+serde = { version = "1.0.195", features = ["derive"], optional = true }

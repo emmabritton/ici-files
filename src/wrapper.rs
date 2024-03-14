@@ -1,7 +1,6 @@
 use crate::errors::IndexedImageError;
 use crate::image::IndexedImage;
-use crate::prelude::AnimatedIndexedImage;
-use crate::IciColor;
+use crate::prelude::*;
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum IndexedWrapper {
@@ -23,8 +22,8 @@ impl From<AnimatedIndexedImage> for IndexedWrapper {
 
 impl IndexedWrapper {
     /// Replace palette for image
-    /// Will only return an error if the new palette has less colors than the image needs
-    pub fn set_palette(&mut self, palette: &[IciColor]) -> Result<(), IndexedImageError> {
+    /// Will only return an error if the new palette has fewer colors than the image needs
+    pub fn set_palette(&mut self, palette: &[Color]) -> Result<(), IndexedImageError> {
         match self {
             IndexedWrapper::Static(img) => img.set_palette(palette),
             IndexedWrapper::Animated(img) => img.set_palette(palette),
@@ -35,7 +34,7 @@ impl IndexedWrapper {
     /// Will only return an error if id is outside the new palette
     pub fn set_palette_replace_id(
         &mut self,
-        palette: &[IciColor],
+        palette: &[Color],
         id: u8,
     ) -> Result<(), IndexedImageError> {
         match self {
@@ -45,9 +44,9 @@ impl IndexedWrapper {
     }
 
     /// Replace palette for image, any color indexes outside the palette will be expanded with `color`
-    pub fn set_palette_replace_color<C: Into<IciColor> + Copy>(
+    pub fn set_palette_replace_color<C: Into<Color> + Copy>(
         &mut self,
-        palette: &[IciColor],
+        palette: &[Color],
         color: C,
     ) {
         match self {
@@ -77,21 +76,21 @@ impl IndexedWrapper {
         }
     }
 
-    pub fn get_color(&self, idx: u8) -> Result<IciColor, IndexedImageError> {
+    pub fn get_color(&self, idx: u8) -> Result<Color, IndexedImageError> {
         match self {
             IndexedWrapper::Static(img) => img.get_color(idx),
             IndexedWrapper::Animated(img) => img.get_color(idx),
         }
     }
 
-    pub fn set_color(&mut self, idx: u8, color: IciColor) -> Result<(), IndexedImageError> {
+    pub fn set_color(&mut self, idx: u8, color: Color) -> Result<(), IndexedImageError> {
         match self {
             IndexedWrapper::Static(img) => img.set_color(idx, color),
             IndexedWrapper::Animated(img) => img.set_color(idx, color),
         }
     }
 
-    pub fn get_palette(&self) -> &[IciColor] {
+    pub fn get_palette(&self) -> &[Color] {
         match self {
             IndexedWrapper::Static(img) => img.get_palette(),
             IndexedWrapper::Animated(img) => img.get_palette(),
