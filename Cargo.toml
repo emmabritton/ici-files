@@ -5,7 +5,7 @@ edition = "2021"
 authors = ["Emma Britton <emmabritton@pm.me>"]
 description = "Encode/decode ici files"
 license-file = "LICENSE"
-repository = "https://github.com/emmabritton/ici_files"
+repository = "https://github.com/emmabritton/ici-files"
 readme = "README.md"
 keywords = ["graphics", "gamedev", "simple"]
 categories = ["graphics", "game-development"]
@@ -15,5 +15,5 @@ default = ["serde"]
 serde = ["dep:serde"]
 
 [dependencies]
-thiserror = "1.0.56"
+thiserror = "1.0.58"
 serde = { version = "1.0.195", features = ["derive"], optional = true }

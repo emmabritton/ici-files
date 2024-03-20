@@ -1,4 +1,5 @@
 pub mod animated;
+mod changing;
 pub mod color;
 pub mod errors;
 pub mod file;
@@ -10,6 +11,7 @@ pub mod wrapper;
 
 pub mod prelude {
     pub use crate::animated::*;
+    pub use crate::changing::*;
     pub use crate::color::*;
     pub use crate::errors::*;
     pub use crate::image::*;

@@ -301,7 +301,7 @@ impl IndexedImage {
     pub fn flip_vertical(&self) -> Result<IndexedImage, IndexedImageError> {
         let mut output = IndexedImage::blank(self.width, self.height, self.palette.clone());
         for y in 0..self.height {
-            let target_y = self.height - y;
+            let target_y = self.height - 1 - y;
             for x in 0..self.width {
                 let target_i = output.get_pixel_index(x, target_y)?;
                 let source_i = self.get_pixel_index(x, y)?;
@@ -319,8 +319,8 @@ impl IndexedImage {
         let half_height = (output.height as f32 / 2.).floor() as u8;
         for y in 0..half_height {
             std::ptr::swap_nonoverlapping(
-                &mut output.pixels[(y * output.width) as usize],
-                &mut output.pixels[((output.height - 1 - y) * output.width) as usize],
+                &mut output.pixels[y as usize * output.width as usize],
+                &mut output.pixels[(output.height - 1 - y) as usize * output.width as usize],
                 output.width as usize,
             );
         }
@@ -331,11 +331,16 @@ impl IndexedImage {
         let mut output = IndexedImage::blank(self.width, self.height, self.palette.clone());
         let half_width = (self.width as f32 / 2.).floor() as u8;
         for y in 0..self.height {
-            let target_y = self.height - y;
             for x in 0..half_width {
-                let target_i = output.get_pixel_index(self.width - x, target_y)?;
-                let source_i = self.get_pixel_index(x, y)?;
-                output.set_pixel(target_i, self.get_pixel(source_i)?)?;
+                let target_right_i = output.get_pixel_index(self.width - x - 1, y)?;
+                let source_left_i = self.get_pixel_index(x, y)?;
+                let target_left_i = output.get_pixel_index(x, y)?;
+                let source_right_i = self.get_pixel_index(self.width - 1 - x, y)?;
+                let source_left = self.get_pixel(source_left_i)?;
+                let source_right = self.get_pixel(source_right_i)?;
+
+                output.set_pixel(target_left_i, source_right)?;
+                output.set_pixel(target_right_i, source_left)?;
             }
         }
         Ok(output)
@@ -348,13 +353,16 @@ impl IndexedImage {
         let mut output = IndexedImage::blank(self.width, self.height, self.palette.clone());
         let half_width = (self.width as f32 / 2.).floor() as u8;
         for y in 0..self.height {
-            let target_y = self.height - y;
             for x in 0..half_width {
-                let target_i = output.get_pixel_index(self.width - x, target_y).unwrap();
-                let source_i = self.get_pixel_index(x, y).unwrap();
-                output
-                    .set_pixel(target_i, self.get_pixel(source_i).unwrap())
-                    .unwrap();
+                let target_right_i = output.get_pixel_index_unchecked(self.width - 1 - x, y);
+                let source_left_i = self.get_pixel_index_unchecked(x, y);
+                let target_left_i = output.get_pixel_index_unchecked(x, y);
+                let source_right_i = self.get_pixel_index_unchecked(self.width - 1 - x, y);
+                let source_left = self.get_pixel_unchecked(source_left_i);
+                let source_right = self.get_pixel_unchecked(source_right_i);
+
+                output.set_pixel_unchecked(target_left_i, source_right);
+                output.set_pixel_unchecked(target_right_i, source_left);
             }
         }
         output
