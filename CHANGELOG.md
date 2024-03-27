@@ -1,5 +1,8 @@
 # Changelog
 
+### Version 0.2.1
+- Make new image methods public
+
 ### Version 0.2.0
 ### Breaking
 - Replace `IciColor` with `Color`

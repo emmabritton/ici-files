@@ -1,5 +1,5 @@
 pub mod animated;
-mod changing;
+pub mod changing;
 pub mod color;
 pub mod errors;
 pub mod file;
