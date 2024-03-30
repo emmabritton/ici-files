@@ -5,7 +5,7 @@ use crate::prelude::IndexedImageError::InvalidHexFormat;
 #[cfg(feature = "serde")]
 use serde::{Deserialize, Serialize};
 
-///This represents an RGBA color and is used to store a pixel by [`Image`](crate::image::Image) and [`PixelsWrapper`](crate::drawing::PixelsWrapper)
+///This represents an RGBA color
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 #[derive(Copy, Clone, Debug, PartialEq, Eq, Hash)]
 pub struct Color {
@@ -17,6 +17,44 @@ pub struct Color {
     pub b: u8,
     //alpha channel
     pub a: u8,
+}
+
+impl Color {
+    pub const fn with_red(&self, red: u8) -> Color {
+        Color {
+            r: red,
+            g: self.g,
+            b: self.b,
+            a: self.a
+        }
+    }
+
+    pub const fn with_green(&self, green: u8) -> Color {
+        Color {
+            r: self.r,
+            g: green,
+            b: self.b,
+            a: self.a
+        }
+    }
+
+    pub const fn with_blue(&self, blue: u8) -> Color {
+        Color {
+            r: self.r,
+            g: self.g,
+            b: blue,
+            a: self.a
+        }
+    }
+
+    pub const fn with_alpha(&self, alpha: u8) -> Color {
+        Color {
+            r: self.r,
+            g: self.g,
+            b: self.b,
+            a: alpha
+        }
+    }
 }
 
 #[inline]
