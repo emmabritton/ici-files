@@ -25,7 +25,7 @@ impl Color {
             r: red,
             g: self.g,
             b: self.b,
-            a: self.a
+            a: self.a,
         }
     }
 
@@ -34,7 +34,7 @@ impl Color {
             r: self.r,
             g: green,
             b: self.b,
-            a: self.a
+            a: self.a,
         }
     }
 
@@ -43,7 +43,7 @@ impl Color {
             r: self.r,
             g: self.g,
             b: blue,
-            a: self.a
+            a: self.a,
         }
     }
 
@@ -52,7 +52,7 @@ impl Color {
             r: self.r,
             g: self.g,
             b: self.b,
-            a: alpha
+            a: alpha,
         }
     }
 }

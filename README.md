@@ -7,7 +7,7 @@
 ## Usage
 
 ```toml
-ici-files = "0.2.1"
+ici-files = "0.2.2"
 ```
 
 Encodes and decodes ICI files and JASC palettes

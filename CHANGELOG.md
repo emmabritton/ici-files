@@ -1,5 +1,8 @@
 # Changelog
 
+### Version 0.2.2
+- Add with_red, etc methods to color
+
 ### Version 0.2.1
 - Make new image methods public
 
