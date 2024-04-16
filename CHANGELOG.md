@@ -1,5 +1,8 @@
 # Changelog
 
+### Version 0.2.3
+- Fix bug where minimum palette size didn't increase when setting pixels
+
 ### Version 0.2.2
 - Add with_red, etc methods to color
 

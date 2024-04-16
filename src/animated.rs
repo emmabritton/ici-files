@@ -104,10 +104,7 @@ impl AnimatedIndexedImage {
             .max()
             .expect("Unable to get highest color index");
         let frame_size = width as usize * height as usize;
-        let animate = matches!(
-            play_type,
-            PlayType::Loops | PlayType::LoopsReversed | PlayType::LoopsBoth
-        );
+        let animate = matches!(play_type, Loops | LoopsReversed | LoopsBoth);
         Ok(Self {
             width,
             height,
@@ -200,6 +197,7 @@ impl AnimatedIndexedImage {
         }
         let idx = (frame as usize * self.frame_size) + pixel_idx;
         self.pixels[idx] = color_idx;
+        self.highest_palette_idx = self.highest_palette_idx.max(color_idx);
         Ok(())
     }
 

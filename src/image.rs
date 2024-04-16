@@ -133,6 +133,7 @@ impl IndexedImage {
             ));
         }
         self.pixels[pixel_idx] = color_idx;
+        self.highest_palette_idx = self.highest_palette_idx.max(color_idx);
         Ok(())
     }
 
@@ -141,6 +142,7 @@ impl IndexedImage {
     /// Out of bounds may occur
     #[inline]
     pub unsafe fn set_pixel_unchecked(&mut self, pixel_idx: usize, color_idx: u8) {
+        self.highest_palette_idx = self.highest_palette_idx.max(color_idx);
         self.pixels[pixel_idx] = color_idx;
     }
 
