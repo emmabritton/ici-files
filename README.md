@@ -14,6 +14,10 @@ Encodes and decodes ICI files and JASC palettes
 
 Designed to be used with [Buffer Graphics](https://github.com/emmabritton/ici-files), and in turn [Pixel Graphics](https://github.com/emmabritton/pixel-graphics-lib).
 
+[ICI Tools](https://github.com/emmabritton/ici_tools) can be useful when working with ICI files
+
+[ICI Image editor](https://github.com/emmabritton/ici-image-editor) is a MSPaint like program for ICI and ICA files
+
 Indexed Color Images come in two forms:
 1. Single
 2. Animated
