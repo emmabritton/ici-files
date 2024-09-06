@@ -2,14 +2,13 @@ use crate::errors::IndexedImageError;
 use crate::errors::IndexedImageError::*;
 use crate::file::FileType::*;
 
-//0 is file version
+//last is file version
 pub(crate) const HEADER: [u8; 4] = [b'I', b'C', b'I', 1];
 
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub enum FileType {
     Image,
     Animated,
-    Atlas,
 }
 
 impl FileType {
@@ -17,7 +16,6 @@ impl FileType {
         match self {
             Image => 1,
             Animated => 2,
-            Atlas => 3,
         }
     }
 
@@ -25,7 +23,6 @@ impl FileType {
         match byte {
             1 => Some(Image),
             2 => Some(Animated),
-            3 => Some(Atlas),
             _ => None,
         }
     }
@@ -34,7 +31,6 @@ impl FileType {
         match self {
             Image => "Image",
             Animated => "Animated Image",
-            Atlas => "Image Atlas",
         }
     }
 
@@ -42,7 +38,6 @@ impl FileType {
         match self {
             Image => "ici",
             Animated => "ica",
-            Atlas => "iat",
         }
     }
 }

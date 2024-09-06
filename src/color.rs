@@ -4,9 +4,9 @@ use crate::errors::IndexedImageError;
 use crate::prelude::IndexedImageError::InvalidHexFormat;
 #[cfg(feature = "serde")]
 use serde::{Deserialize, Serialize};
+use serde::{Deserializer, Serializer};
 
 ///This represents an RGBA color
-#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 #[derive(Copy, Clone, Debug, PartialEq, Eq, Hash)]
 pub struct Color {
     //red channel
@@ -17,6 +17,21 @@ pub struct Color {
     pub b: u8,
     //alpha channel
     pub a: u8,
+}
+
+#[cfg(feature = "serde")]
+impl Serialize for Color {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error> where S: Serializer {
+        serializer.serialize_u32(self.into())
+    }
+}
+
+#[cfg(feature = "serde")]
+impl<'de> Deserialize<'de> for Color {
+    fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
+        let num = u32::deserialize(d)?;
+        Ok(num.into())
+    }
 }
 
 impl Color {
@@ -89,6 +104,25 @@ impl From<(u8, u8, u8)> for Color {
 impl From<[u8; 3]> for Color {
     fn from(value: [u8; 3]) -> Self {
         Color::new(value[0], value[1], value[2], 255)
+    }
+}
+
+impl From<u32> for Color {
+    fn from(value: u32) -> Self {
+        let bytes = value.to_be_bytes();
+        Color::new(bytes[0], bytes[1], bytes[2], bytes[3])
+    }
+}
+
+impl From<Color> for u32 {
+    fn from(value: Color) -> Self {
+        u32::from_be_bytes(value.as_array())
+    }
+}
+
+impl From<&Color> for u32 {
+    fn from(value: &Color) -> Self {
+        u32::from_be_bytes(value.as_array())
     }
 }
 
@@ -532,5 +566,12 @@ mod test {
         assert!(RED.is_dark());
         assert!(DARK_GRAY.is_dark());
         assert!(!LIGHT_GRAY.is_dark());
+    }
+
+    #[test]
+    fn _u32() {
+        let num: u32 = RED.into();
+        let color: Color = num.into();
+        assert_eq!(RED, color);
     }
 }

@@ -1,5 +1,9 @@
 # Changelog
 
+### Version 0.2.4
+- Update deps
+- Add to/from u32 color conversion
+
 ### Version 0.2.3
 - Fix bug where minimum palette size didn't increase when setting pixels
 
