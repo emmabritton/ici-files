@@ -62,9 +62,9 @@ impl ChangeColors for Color {
 
     fn with_brightness(&self, amount: f32) -> Self {
         Color::new(
-            ((((self.r as f32) / 255.0) * amount).min(1.0).max(0.0) * 255.0) as u8,
-            ((((self.g as f32) / 255.0) * amount).min(1.0).max(0.0) * 255.0) as u8,
-            ((((self.b as f32) / 255.0) * amount).min(1.0).max(0.0) * 255.0) as u8,
+            ((((self.r as f32) / 255.0) * amount).clamp(0.0, 1.0) * 255.0) as u8,
+            ((((self.g as f32) / 255.0) * amount).clamp(0.0, 1.0) * 255.0) as u8,
+            ((((self.b as f32) / 255.0) * amount).clamp(0.0, 1.0) * 255.0) as u8,
             self.a,
         )
     }

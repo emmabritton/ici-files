@@ -285,9 +285,9 @@ impl Color {
     pub fn with_brightness(&self, amount: f32) -> Color {
         let new = self.as_f32_array();
         (
-            (new[0] * amount).min(1.0).max(0.0),
-            (new[1] * amount).min(1.0).max(0.0),
-            (new[2] * amount).min(1.0).max(0.0),
+            (new[0] * amount).clamp(0.0, 1.0),
+            (new[1] * amount).clamp(0.0, 1.0),
+            (new[2] * amount).clamp(0.0, 1.0),
             new[3],
         )
             .into()
