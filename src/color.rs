@@ -21,7 +21,10 @@ pub struct Color {
 
 #[cfg(feature = "serde")]
 impl Serialize for Color {
-    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error> where S: Serializer {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
         serializer.serialize_u32(self.into())
     }
 }
