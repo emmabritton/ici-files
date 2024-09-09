@@ -22,7 +22,7 @@ Indexed Color Images come in two forms:
 1. Single
 2. Animated
 
-All three may contain palette data in one of these forms:
+Both may contain palette data in one of these forms:
 1. No palette data
 2. Palette ID (u16)
 3. Palette Name (String 1..=255)
