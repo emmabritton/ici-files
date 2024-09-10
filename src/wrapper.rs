@@ -2,6 +2,9 @@ use crate::errors::IndexedImageError;
 use crate::image::IndexedImage;
 use crate::prelude::*;
 
+/// Store static or animated images in a generic way
+///
+/// Supports most methods
 #[derive(Debug, Clone, PartialEq)]
 pub enum IndexedWrapper {
     Static(IndexedImage),

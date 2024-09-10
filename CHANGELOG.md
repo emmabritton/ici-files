@@ -1,5 +1,9 @@
 # Changelog
 
+### Version 0.2.5
+- Update docs
+- Update deps
+
 ### Version 0.2.4
 - Update deps
 - Add to/from u32 color conversion

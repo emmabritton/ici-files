@@ -1,6 +1,6 @@
 [package]
 name = "ici-files"
-version = "0.2.4"
+version = "0.2.5"
 edition = "2021"
 authors = ["Emma Britton <emmabritton@pm.me>"]
 description = "Encode/decode ici files"
@@ -16,4 +16,4 @@ serde = ["dep:serde"]
 
 [dependencies]
 thiserror = "1.0.63"
-serde = { version = "1.0.209", features = ["derive"], optional = true }
+serde = { version = "1.0.210", features = ["derive"], optional = true }
