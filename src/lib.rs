@@ -1,6 +1,7 @@
 pub mod animated;
 pub mod changing;
 pub mod color;
+pub mod conversion;
 pub mod errors;
 pub mod file;
 pub mod image;
@@ -13,6 +14,7 @@ pub mod prelude {
     pub use crate::animated::*;
     pub use crate::changing::*;
     pub use crate::color::*;
+    pub use crate::conversion::*;
     pub use crate::errors::*;
     pub use crate::image::*;
     pub use crate::jasc_palette::*;

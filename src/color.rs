@@ -1,5 +1,6 @@
 use crate::Tint;
 
+use crate::conversion::ColorConversion;
 use crate::errors::IndexedImageError;
 use crate::prelude::IndexedImageError::InvalidHexFormat;
 #[cfg(feature = "serde")]
@@ -25,7 +26,7 @@ impl Serialize for Color {
     where
         S: Serializer,
     {
-        serializer.serialize_u32(self.into())
+        serializer.serialize_u32(self.to_rgba())
     }
 }
 
@@ -33,7 +34,7 @@ impl Serialize for Color {
 impl<'de> Deserialize<'de> for Color {
     fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
         let num = u32::deserialize(d)?;
-        Ok(num.into())
+        Ok(Color::from_rgba(num))
     }
 }
 
@@ -75,107 +76,14 @@ impl Color {
     }
 }
 
-#[inline]
-fn f32_to_u8(value: f32) -> u8 {
-    (value * 255.).round().clamp(0., 255.) as u8
-}
-
 impl Default for Color {
+    /// Black
     fn default() -> Self {
         Color::new(0, 0, 0, 255)
     }
 }
 
-impl From<(u8, u8, u8, u8)> for Color {
-    fn from(value: (u8, u8, u8, u8)) -> Self {
-        Color::new(value.0, value.1, value.2, value.3)
-    }
-}
-
-impl From<[u8; 4]> for Color {
-    fn from(value: [u8; 4]) -> Self {
-        Color::new(value[0], value[1], value[2], value[3])
-    }
-}
-
-impl From<(u8, u8, u8)> for Color {
-    fn from(value: (u8, u8, u8)) -> Self {
-        Color::new(value.0, value.1, value.2, 255)
-    }
-}
-
-impl From<[u8; 3]> for Color {
-    fn from(value: [u8; 3]) -> Self {
-        Color::new(value[0], value[1], value[2], 255)
-    }
-}
-
-impl From<u32> for Color {
-    fn from(value: u32) -> Self {
-        let bytes = value.to_be_bytes();
-        Color::new(bytes[0], bytes[1], bytes[2], bytes[3])
-    }
-}
-
-impl From<Color> for u32 {
-    fn from(value: Color) -> Self {
-        u32::from_be_bytes(value.as_array())
-    }
-}
-
-impl From<&Color> for u32 {
-    fn from(value: &Color) -> Self {
-        u32::from_be_bytes(value.as_array())
-    }
-}
-
-impl From<(f32, f32, f32, f32)> for Color {
-    fn from(value: (f32, f32, f32, f32)) -> Self {
-        Color::new(
-            f32_to_u8(value.0),
-            f32_to_u8(value.1),
-            f32_to_u8(value.2),
-            f32_to_u8(value.3),
-        )
-    }
-}
-
-impl From<[f32; 4]> for Color {
-    fn from(value: [f32; 4]) -> Self {
-        Color::new(
-            f32_to_u8(value[0]),
-            f32_to_u8(value[1]),
-            f32_to_u8(value[2]),
-            f32_to_u8(value[3]),
-        )
-    }
-}
-
-impl From<(f32, f32, f32)> for Color {
-    fn from(value: (f32, f32, f32)) -> Self {
-        Color::new(
-            f32_to_u8(value.0),
-            f32_to_u8(value.1),
-            f32_to_u8(value.2),
-            255,
-        )
-    }
-}
-
-impl From<[f32; 3]> for Color {
-    fn from(value: [f32; 3]) -> Self {
-        Color::new(
-            f32_to_u8(value[0]),
-            f32_to_u8(value[1]),
-            f32_to_u8(value[2]),
-            255,
-        )
-    }
-}
-
 impl Color {
-    /// Converts 0.0..=1.0 to 0..=255
-    /// Values outside 0.0..=1.0 are clamped
     #[inline]
     pub const fn new(r: u8, g: u8, b: u8, a: u8) -> Self {
         Color { r, g, b, a }
@@ -185,13 +93,6 @@ impl Color {
     #[inline]
     pub const fn gray(value: u8) -> Self {
         Color::new(value, value, value, 255)
-    }
-
-    /// Convert an i32 into a [`Color`] where bytes match the format [R,G,B,A]
-    #[inline]
-    pub const fn from_i32(value: i32) -> Self {
-        let bytes = value.to_be_bytes();
-        Color::new(bytes[0], bytes[1], bytes[2], bytes[3])
     }
 
     pub fn from_hex(hex: &str) -> Result<Color, IndexedImageError> {
@@ -225,44 +126,21 @@ impl Color {
 }
 
 impl Color {
-    /// Split color into array in the format [R,G,B,A]
-    #[inline]
-    pub fn as_array(&self) -> [u8; 4] {
-        [self.r, self.g, self.b, self.a]
-    }
-
-    /// Convert color to i32 in the format [R,G,B,A]
-    #[inline]
-    pub fn as_i32(&self) -> i32 {
-        i32::from_be_bytes(self.as_array())
-    }
-
-    /// Convert color to f32 array in the format [R,G,B,A] where 0.0 = 0, and 1.0 = 255
-    #[inline]
-    pub fn as_f32_array(&self) -> [f32; 4] {
-        [
-            self.r as f32 / 255.0,
-            self.g as f32 / 255.0,
-            self.b as f32 / 255.0,
-            self.a as f32 / 255.0,
-        ]
-    }
-
     pub fn blend(&self, other: Color) -> Color {
-        let base = self.as_f32_array();
-        let added = other.as_f32_array();
+        let base: [f32; 4] = self.to_rgba();
+        let added: [f32; 4] = other.to_rgba();
         let mut mix = [0.0, 0.0, 0.0, 0.0];
         mix[3] = 1.0 - (1.0 - added[3]) * (1.0 - base[3]);
         mix[0] = (added[0] * added[3] / mix[3]) + (base[0] * base[3] * (1.0 - added[3]) / mix[3]);
         mix[1] = (added[1] * added[3] / mix[3]) + (base[1] * base[3] * (1.0 - added[3]) / mix[3]);
         mix[2] = (added[2] * added[3] / mix[3]) + (base[2] * base[3] * (1.0 - added[3]) / mix[3]);
 
-        mix.into()
+        Color::from_rgba(mix)
     }
 
     /// ignores alpha
     pub fn brightness(&self) -> f32 {
-        let new = self.as_f32_array();
+        let new: [f32; 4] = self.to_rgba();
         0.2126 * new[0] + 0.7152 * new[1] + 0.0722 * new[2]
     }
 
@@ -286,25 +164,24 @@ impl Color {
 
     /// Copy color with brightness
     pub fn with_brightness(&self, amount: f32) -> Color {
-        let new = self.as_f32_array();
-        (
+        let new: [f32; 4] = self.to_rgba();
+        Color::from_rgba((
             (new[0] * amount).clamp(0.0, 1.0),
             (new[1] * amount).clamp(0.0, 1.0),
             (new[2] * amount).clamp(0.0, 1.0),
             new[3],
-        )
-            .into()
+        ))
     }
 
     /// De/saturate color by percentage
     /// Negative amount increases saturation
     pub fn with_saturate(&self, amount: f32) -> Color {
-        let mut new = self.as_f32_array();
+        let mut new: [f32; 4] = self.to_rgba();
         let lum = 0.2989 * new[0] + 0.5870 * new[1] + 0.1140 * new[2];
         new[0] = new[0] + amount * (lum - new[0]);
         new[1] = new[1] + amount * (lum - new[1]);
         new[2] = new[2] + amount * (lum - new[2]);
-        new.into()
+        Color::from_rgba(new)
     }
 
     /// Decrease saturation by 10%
@@ -573,8 +450,8 @@ mod test {
 
     #[test]
     fn _u32() {
-        let num: u32 = RED.into();
-        let color: Color = num.into();
+        let num: u32 = RED.to_rgba();
+        let color = Color::from_rgba(num);
         assert_eq!(RED, color);
     }
 }
