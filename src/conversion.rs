@@ -86,6 +86,50 @@ impl OpaqueColorConversion<(f32, f32, f32)> for Color {
     }
 }
 
+impl ColorConversion<[u8; 4]> for Color {
+    #[inline]
+    fn to_rgba(self) -> [u8; 4] {
+        [self.r, self.g, self.b, self.a]
+    }
+
+    #[inline]
+    fn to_argb(self) -> [u8; 4] {
+        [self.a, self.r, self.g, self.b]
+    }
+
+    #[inline]
+    fn from_rgba(value: [u8; 4]) -> Color {
+        Color::new(value[0], value[1], value[2], value[3])
+    }
+
+    #[inline]
+    fn from_argb(value: [u8; 4]) -> Color {
+        Color::new(value[1], value[2], value[3], value[0])
+    }
+}
+
+impl ColorConversion<(u8, u8, u8, u8)> for Color {
+    #[inline]
+    fn to_rgba(self) -> (u8, u8, u8, u8) {
+        (self.r, self.g, self.b, self.a)
+    }
+
+    #[inline]
+    fn to_argb(self) -> (u8, u8, u8, u8) {
+        (self.a, self.r, self.g, self.b)
+    }
+
+    #[inline]
+    fn from_rgba(value: (u8, u8, u8, u8)) -> Color {
+        Color::new(value.0, value.1, value.2, value.3)
+    }
+
+    #[inline]
+    fn from_argb(value: (u8, u8, u8, u8)) -> Color {
+        Color::new(value.1, value.2, value.3, value.0)
+    }
+}
+
 impl ColorConversion<u32> for Color {
     #[inline]
     fn to_rgba(self) -> u32 {
@@ -106,7 +150,7 @@ impl ColorConversion<u32> for Color {
     #[inline]
     fn from_argb(value: u32) -> Color {
         let bytes = value.to_be_bytes();
-        Color::new(bytes[3], bytes[0], bytes[1], bytes[2])
+        Color::new(bytes[1], bytes[2], bytes[3], bytes[0])
     }
 }
 
@@ -144,10 +188,10 @@ impl ColorConversion<[f32; 4]> for Color {
     #[inline]
     fn from_argb(value: [f32; 4]) -> Color {
         Color::new(
-            f32_to_u8(value[3]),
-            f32_to_u8(value[0]),
             f32_to_u8(value[1]),
             f32_to_u8(value[2]),
+            f32_to_u8(value[3]),
+            f32_to_u8(value[0]),
         )
     }
 }
@@ -186,10 +230,60 @@ impl ColorConversion<(f32, f32, f32, f32)> for Color {
     #[inline]
     fn from_argb(value: (f32, f32, f32, f32)) -> Color {
         Color::new(
-            f32_to_u8(value.3),
-            f32_to_u8(value.0),
             f32_to_u8(value.1),
             f32_to_u8(value.2),
+            f32_to_u8(value.3),
+            f32_to_u8(value.0),
         )
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use crate::prelude::*;
+
+    #[test]
+    fn check_color_conversion_u32() {
+        let red = RED;
+        let argb: u32 = red.to_argb();
+        let rgba: u32 = red.to_rgba();
+        assert_eq!(red, Color::from_argb(argb));
+        assert_eq!(red, Color::from_rgba(rgba));
+    }
+
+    #[test]
+    fn check_color_conversion_f32_arr() {
+        let red = RED;
+        let argb: [f32; 4] = red.to_argb();
+        let rgba: [f32; 4] = red.to_rgba();
+        assert_eq!(red, Color::from_argb(argb));
+        assert_eq!(red, Color::from_rgba(rgba));
+    }
+
+    #[test]
+    fn check_color_conversion_f32_tuple() {
+        let red = RED;
+        let argb: (f32, f32, f32, f32) = red.to_argb();
+        let rgba: (f32, f32, f32, f32) = red.to_rgba();
+        assert_eq!(red, Color::from_argb(argb));
+        assert_eq!(red, Color::from_rgba(rgba));
+    }
+
+    #[test]
+    fn check_color_conversion_u8_arr() {
+        let red = RED;
+        let argb: [u8; 4] = red.to_argb();
+        let rgba: [u8; 4] = red.to_rgba();
+        assert_eq!(red, Color::from_argb(argb));
+        assert_eq!(red, Color::from_rgba(rgba));
+    }
+
+    #[test]
+    fn check_color_conversion_u8_tuple() {
+        let red = RED;
+        let argb: (u8, u8, u8, u8) = red.to_argb();
+        let rgba: (u8, u8, u8, u8) = red.to_rgba();
+        assert_eq!(red, Color::from_argb(argb));
+        assert_eq!(red, Color::from_rgba(rgba));
     }
 }

@@ -1,5 +1,8 @@
 # Changelog
 
+### Version 0.4.0
+- Fix bug in argb color conversion
+
 ### Version 0.3.0
 ### Breaking
 - Remove `Into`/`From` implementations for `Color`
