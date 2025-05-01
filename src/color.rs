@@ -5,6 +5,7 @@ use crate::errors::IndexedImageError;
 use crate::prelude::IndexedImageError::InvalidHexFormat;
 #[cfg(feature = "serde")]
 use serde::{Deserialize, Serialize};
+#[cfg(feature = "serde")]
 use serde::{Deserializer, Serializer};
 
 ///This represents an RGBA color

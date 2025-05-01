@@ -1,5 +1,8 @@
 # Changelog
 
+### Version 0.4.1
+- Fix issue where serde had to be enabled to build
+
 ### Version 0.4.0
 - Fix bug in argb color conversion
 
